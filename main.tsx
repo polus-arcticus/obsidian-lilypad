@@ -20,15 +20,25 @@ import { unixfs, UnixFS } from '@helia/unixfs'
 import { CID } from 'multiformats'
 import { delegatedContentRouting } from '@libp2p/delegated-content-routing'
 import { type create as createKuboClient } from 'kubo-rpc-client'
-
-
+import {webSockets} from '@libp2p/websockets'
+import {webRTC, webRTCDirect} from "@libp2p/webrtc";
+import { bootstrap } from '@libp2p/bootstrap'
+import {tcp} from '@libp2p/tcp'
+import { noise } from '@libp2p/noise'
+import { mplex } from '@libp2p/mplex'
+import {identifyService} from "libp2p/identify";
+import {autoNATService} from "libp2p/autonat";
+import { ipniContentRouting } from '@libp2p/ipni-content-routing';
+/*
 (async function heliaAuto() {
-	const instance = await createHelia()
-	const testfs = await unixfs(instance)
+	
+	const instance = await createHelia({holdGcLock: true})
+	const testfs = unixfs(instance)
 	const testDecoder = new TextDecoder()
 	let content = ''
 
 	let Cid = CID.parse(String('QmQb8JqfusoZ9opKJSrToabwCq2Vjv1JJyUPRYG6FJVg1P'))
+	console.log('hi helia auto')
 	for await (const buf of testfs.cat(Cid)) {
 		console.log('buffer', buf)
 		content += testDecoder.decode(buf, {
@@ -37,7 +47,7 @@ import { type create as createKuboClient } from 'kubo-rpc-client'
 	}
 	console.log('content', content)
 })();
-
+*/
 
 interface ChainConfig {
 	name: string;
@@ -93,12 +103,52 @@ export default class ObsidianLilypad extends Plugin {
 				this.helia = instance
 			} else {
 				console.log('starting helia without kubo')
-				this.helia = await createHelia({})
+				this.helia = await createHelia({
+					libp2p: {
+						contentRouters: [
+							ipniContentRouting('https://cid.contact')
+
+						],
+						addresses: {
+							listen: [
+								'/ip4/127.0.0.1/tcp/0'
+							]
+						  },
+						transports: [
+							tcp(),
+						],
+						streamMuxers: [
+							mplex()
+						  ],
+						  connectionEncryption: [
+							noise()
+						  ],
+						  services: {
+							identify: identifyService(),
+							autoNAT: autoNATService(),
+						  },
+						peerDiscovery: [
+							bootstrap({
+							  list: [
+								'/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
+								'/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
+								'/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
+								'/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
+								'/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ'
+							  ]
+							})]
+					}
+				})
+				//this.helia = await createHelia()
+				this.helia.libp2p.addEventListener('peer:connect', (event) => {
+					console.log('peer:connect', event.detail.toString())
+				})
 				this.fs = unixfs(this.helia)
 			}
 			this.decoder = new TextDecoder()
 			
 		} catch (e) {
+			console.log('helia init error: ', e)
 			this.logDebug(`helia init error: ${e}`)
 		}
 		console.log('passed helia')
