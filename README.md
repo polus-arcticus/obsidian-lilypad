@@ -1,4 +1,6 @@
-# Obsidian Lilypad
+# Obsidian Lilypad (archive)
+##Development continued at https://github.com/Obsidian-Desci/Obsidian-Desci 
+
 This is a [desci nodes](https://desci.com/), [lilypad](https://docs.lilypadnetwork.org/lilypad-v1-testnet/overview), [kamu](https://www.kamu.dev/) and [ipfs helia](https://github.com/ipfs/helia) plugin for Obsidian (https://obsidian.md).
 
 [Video Demo](https://www.youtube.com/watch?v=H4Ww6vjLGj8&ab_channel=TaylorHulsmans)
