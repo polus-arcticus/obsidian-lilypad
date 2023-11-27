@@ -1,5 +1,5 @@
 # Obsidian Lilypad (archive)
-##Development continued at https://github.com/Obsidian-Desci/Obsidian-Desci 
+## Development continued at https://github.com/Obsidian-Desci/Obsidian-Desci 
 
 This is a [desci nodes](https://desci.com/), [lilypad](https://docs.lilypadnetwork.org/lilypad-v1-testnet/overview), [kamu](https://www.kamu.dev/) and [ipfs helia](https://github.com/ipfs/helia) plugin for Obsidian (https://obsidian.md).
 
